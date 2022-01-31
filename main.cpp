@@ -8,7 +8,12 @@
 #include <functional>
 #include <random>
 
-struct DivisibleBY
+//print sequences.
+auto print_seq = [](auto rem,auto first, auto last){
+    for(std::cout<<rem; first != last; std::cout<<*first++ <<' ') {}
+};
+
+        struct DivisibleBY
 {
     const int d;
     //todo to understand these sentence.
@@ -138,9 +143,16 @@ void std_partition()
 
     //std::partition return Iterator to the first element of the second group.
     std::partition(v.begin(),v.end(),is_even);
-    for (auto e:v) std::cout<<e;
+
+    print_seq("After partitioning, v: ", v.cbegin(),v.cend());
     std::cout<<'\n';
 
+    const auto pp = std::partition_point(v.cbegin(), v.cend(), is_even);
+    const auto i = std::distance(v.cbegin(),pp);
+    std::cout<<"Partition point is at "<<i<<"; v["<< *pp <<"]"<<'\n';
+    print_seq("First partition (all even elements): ", v.cbegin(),pp);
+    print_seq("; Second partition (all odd elements): ",pp, v.cend());
+    std::cout<<'\n';
     std::cout<<std::is_partitioned(v.begin(),v.end(),is_even)<<'\n';
     std::reverse(v.begin(), v.end());
 
@@ -163,8 +175,6 @@ void std_partition()
                         );
     std::cout<<"Partition Copy Demo, true_arr: \t";
     for (auto x:true_arr) {std::cout<<x<<' ';}
-
-
 
 }
 
