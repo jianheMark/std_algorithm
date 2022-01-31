@@ -124,7 +124,14 @@ void print(std::string_view comment, const container& src, const container& dst 
     prn("dst: ", dst);
 }
 
-
+void std_partition()
+{
+    std::array<int,9> v = {1,2,3,4,5,6,7,8,9};
+    auto is_even = [] (int i){return i % 2;};
+    std::cout.setf(std::ios_base::boolalpha);
+    std::cout<<std::is_partitioned(v.begin(),v.end(),is_even)<<' ';
+    std::partition(v.begin(),v.end(),is_even);
+}
 
 int main() {
     std::cout<<"line begin;\n";
