@@ -126,28 +126,65 @@ void print(std::string_view comment, const container& src, const container& dst 
 
 void std_partition()
 {
-    std::array<int,9> v = {1,2,3,4,5,6,7,8,9};
+    /* Reorders the elements in the range [First, last) in such a way that all elements
+     * for which the predicate p return true precedes the elements for which
+     * predicate p return false.
+     * Relative order of the elements is not preserved.
+     */
+    std::array<int,10> v = {1,2,3,4,5,6,7,8,9,10};
     auto is_even = [] (int i){return i % 2;};
     std::cout.setf(std::ios_base::boolalpha);
     std::cout<<std::is_partitioned(v.begin(),v.end(),is_even)<<' ';
+
+    //std::partition return Iterator to the first element of the second group.
     std::partition(v.begin(),v.end(),is_even);
+    for (auto e:v) std::cout<<e;
+    std::cout<<'\n';
+
+    std::cout<<std::is_partitioned(v.begin(),v.end(),is_even)<<'\n';
+    std::reverse(v.begin(), v.end());
+
+    std::cout<<std::is_partitioned(v.cbegin(), v.cend(), is_even)<<' ';
+
+    std::cout<<std::is_partitioned(v.crbegin(), v.crend(),is_even)<<' ';
+    std::cout<<"........std::partition_point....\n";
+    for (auto i:v) std::cout<<i;
+    int true_arr[5] = {0};
+    int false_arr[5] = {0};
+    /*
+     * Copies the elements from range [first, last) to two different ranges depending
+     * on the value returned by the predicate p. the element that satisfy the predicate p
+     * are copied to the range beginning at d_first_true.
+     */
+    std::partition_copy(std::begin(v),std::end(v),
+                        std::begin(true_arr),
+                        std::begin(false_arr),
+                        [] (int i) {return i>5;}
+                        );
+    std::cout<<"Partition Copy Demo, true_arr: \t";
+    for (auto x:true_arr) {std::cout<<x<<' ';}
+
+
+
 }
 
 int main() {
     std::cout<<"line begin;\n";
-
-    container src{"foo","bar","baz"};
-    container dst{"qux","quxx","quuz","corge"};
-    print("Non-overlapping case: before move_backward: ",src,dst);
-    /* Moves the elements from the range [first, last), to another range ending at d_last.
-     * The last element move first, but their relative order is preserved.
-     */
-    std::move_backward(src.begin(),src.end(), dst.end());
-    print("After: ",src,dst);
-    src = {"snap","crackle","pop","lock","drop"};
-
-    std::move_backward(src.begin(),src.begin()+3,src.end());
-    std::cout<<src.size(); //move only make content null, does not reduce size.
+    std_partition();
+    {
+//        container src{"foo", "bar", "baz"};
+//        container dst{"qux", "quxx", "quuz", "corge"};
+//        print("Non-overlapping case: before move_backward: ", src, dst);
+//        /* Moves the elements from the range [first, last), to another range ending at d_last.
+//         * The last element move first, but their relative order is preserved.
+//         */
+//        std::move_backward(src.begin(), src.end(), dst.end());
+//        print("After: ", src, dst);
+//        src = {"snap", "crackle", "pop", "lock", "drop"};
+//
+//        std::move_backward(src.begin(), src.begin() + 3, src.end());
+//        std::cout << src.size(); //move only make content null, does not reduce size.
+    }
 
     //    std::vector<int> v{1,5,8};
 //    std_allof_anyof_noneof();
