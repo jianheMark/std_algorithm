@@ -363,7 +363,7 @@ void std_replace()
      *  std::replace_if Replaces all elements for which predicate p returns true.
      */
     std::cout<<"std:;replace code block begins.\n";
-    std::array<int, 10> s {5,6,7,3,1,8,9,10,2,4};
+    std::vector<int> s {5,6,7,3,1,8,9,10,2,4};
     std::replace(s.begin(), s.end(),8, 88);
     for (int a: s) {
         std::cout<< a<<" ";
@@ -371,11 +371,17 @@ void std_replace()
     std::cout<<'\n';
     std::replace_if(s.begin(), s.end(),
                     std::bind(std::less<>(), std::placeholders::_1,5),55);
-    for (int a : s) {
-        std::cout<< a<<" ";
-    }
-    std::cout<<"std_replace code block ends.\n";
-
+    std::cout<<"now the vector s: "<<s<<'\n';
+//    for (int a : s) {
+//        std::cout<< a<<" ";
+//    }
+//    std::cout<<"std_replace code block ends.\n";
+    //std::replace_copy
+    std::replace_copy_if(s.begin(), s.end(),
+                         std::ostream_iterator<int>(std::cout, " "),
+                                 [] (int n) {return n>60;}
+                                 ,99);
+    std::cout<<'\n';
 }
 void std_unique_copy()
 {
@@ -424,7 +430,7 @@ int main() {
 
     //    std::vector<int> v{1,5,8};
 //    std_allof_anyof_noneof();
-    std_copy(); //https://en.cppreference.com/w/cpp/algorithm/copy
+//    std_copy(); //https://en.cppreference.com/w/cpp/algorithm/copy
 
 // any_of demo.
 //    if(std::any_of(v.cbegin(),v.cend(), DivisibleBY(7)))
