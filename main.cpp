@@ -178,9 +178,47 @@ void std_partition()
 
 }
 
+void std_sort()
+{
+    /*is_sorted: Checks if the element in range [First, last) are sorted in non-descending order.
+     *
+     */
+    int digits[] {3,1,4,1,8};
+    std::cout<<": is_sorted: "<<std::boolalpha
+            <<std::is_sorted(std::begin(digits),std::end(digits))
+            <<'\n';
+    std::sort(std::begin(digits),std::end(digits));
+    for (auto i:digits) {std::cout<<i<<' ';}
+    std::cout<<"After sort function: "<<std::is_sorted(std::begin(digits),std::end(digits))<<'\n';
+}
+
+//template to print out container elements wrapped it with "{" and "}".
+template<typename Os, typename V>
+Os& operator<< (Os& os, V const& v) {
+    os<<"{ ";
+    for ( auto const& e: v ) os << e <<' ';
+    return os<< "}";
+}
+
+void std_permutation()
+{
+    static constexpr auto v1 = {1,2,3,4,5};
+    static constexpr auto v2 = {3,5,4,1,2};
+    static constexpr auto v3 = {2,3,1,5,4};
+    std::cout<< v2<<" is a permutation of "<<v1<<": "<<std::boolalpha
+             <<std::is_permutation(v1.begin(),v1.end(),v2.begin())<<'\n'
+             << v3<<"is a permutation of " <<v1<<": "<<std::boolalpha
+             <<std::is_permutation(v1.begin(),v1.end(),v3.begin());
+}
 int main() {
+
+
     std::cout<<"line begin;\n";
-    std_partition();
+
+    std_permutation();
+
+//    std_sort(); //sort
+//    std_partition();
     {
 //        container src{"foo", "bar", "baz"};
 //        container dst{"qux", "quxx", "quuz", "corge"};
