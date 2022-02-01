@@ -356,6 +356,7 @@ void std_remove()
                    );
     std::cout<<"\"\n";
 
+
 }
 void std_replace()
 {
@@ -398,11 +399,38 @@ void std_unique_copy()
                      [] (char c1, char c2) {return c1 == ' ' && c2 == ' ';});
     std::cout<<"After: "<<s2<<'\n';
 }
+void std_rotate_copy()
+{
+    std::vector<int> src = {1,2,3,4,5};
+    auto pivot = std::find(src.begin(), src.end(),3);
+    std::vector<int> dest(src.size());
+/*
+ *
+    template< class ForwardIt, class OutputIt >
+    constexpr OutputIt rotate_copy( ForwardIt first, ForwardIt n_first,
+                                ForwardIt last, OutputIt d_first );
+ * Copies the elements from range [first, last), to
+ *  another range beginning at d_first in such a way,
+ *  that the element n_first becomes the first element of the new range
+ *  and n_first - 1 becomes the last element.
+ */
+    std::rotate_copy(
+            src.begin(),pivot,src.end(),dest.begin()
+            );
+    for (const auto &i :dest)
+    {
+        std::cout<<i<<' ';
+    }
+    std::cout<<'\n';
+
+
+}
 
 int main() {
+        std::cout<<"line begin;\n";
+        std_rotate_copy();
+//    std_replace();
 
-    std_replace();
-//    std::cout<<"line begin;\n";
 //    std_remove();
 //    std_unique_copy(); //https://en.cppreference.com/w/cpp/algorithm/unique_copy
 //    std_count_ifAndCount();
