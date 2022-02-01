@@ -67,6 +67,12 @@ void std_copy(){
             );
     std::cout<<'\n';
     std::cout<<"to_vector contains these multiples of 3: \n";
+    /*
+     * Erases all the elements.
+     * Note that this function only erases the elements,
+     * and that if the elements themselves are pointers,
+     * the pointed-to memory is not touched in any way. Managing the pointer is the user's responsibility.
+     */
     to_vector.clear();
     std::copy_if(
             from_vector.begin(), from_vector.end(),
@@ -74,6 +80,13 @@ void std_copy(){
             [] (int x) {return x % 3 == 0;}
             );
     for (int x:to_vector) std::cout<<x<<' ';
+    std::cout<<'\n';
+    to_vector.clear();
+    to_vector.resize(15); //Resizes the %vector to the specified number of elements
+    std::copy_backward(from_vector.begin(), from_vector.end(), to_vector.end());
+    std::cout<<"to_vector contains: ";
+    for (auto i: to_vector) std::cout<<i<<' ';
+
 }
 
 void std_findif_find_ifnot(){
@@ -244,13 +257,70 @@ void unitializedCopyN()
     std::return_temporary_buffer(p);
 
 }
+struct SUM{
+    void operator() (int n) {sum +=n;}
+    int sum{0};
+};
+void forEachALL()
+{
+    std::vector<int> numbers {3,19,42,13,49};
+    auto print = [] (const int& n) {std::cout<<" "<<n;};
+    std::cout<<"Before: ";
+    /* for_each(_InputIterator __first, _InputIterator __last, _Function __f)
+     * Applies the function object __f to each element in the range [first,last).
+     * __f must not modify the order of the sequence. If __f has a return value it is ignored
+     */
+    std::for_each(numbers.cbegin(), numbers.cend(), print);
+    std::cout<<'\n';
+
+    std::for_each(numbers.begin(), numbers.end(),[](int& n) {n++;});
+    //call SUM::operator() for each number;
+    SUM s = std::for_each(numbers.begin(), numbers.end(), SUM());
+    std::cout<<"after: ";
+    std::for_each(numbers.cbegin(), numbers.cend(),print);
+    std::cout<<'\n';
+    std::cout<<"sum: "<<s.sum<<'\n';
+
+    /* Applies the given function object f to the result of dereferencing every iterator
+     * in the range[first,last), in order.
+     */
+    std::for_each_n(numbers.begin(), 2,[](auto& n){n++;});
+    std::cout<<"After for_each_n operation: ";
+    for (auto i: numbers)  std::cout<<i<<' ';
+    std::cout<<'\n';
+}
+void std_count_ifAndCount()
+{
+    constexpr std::array v = {1,2,3,4,5,6,7,8,9,10};
+    std::cout<<v;
+    std::cout<<'\n';
+    for (const int target: {3,4,5}) {
+        const int num_items = std::count(v.cbegin(), v.cend(),target);
+        std::cout<<"number: "<<target<<", count: "<<num_items<<'\n';
+    }
+
+    //lambda expression to count elements divisible by 4.
+    int count_divBy4 =
+            std::count_if(v.begin(), v.end(), [] (int i ) {return i % 4 ==0;});
+    std::cout<<"Numbers divisible by four: "<<count_divBy4<<'\n';
+
+    auto distance = [] (auto first, auto last) {
+        return std::count_if(first, last,[](auto) {return true;});
+    };
+
+    static_assert(distance(v.begin(), v.end())==10);
+
+}
+
 int main() {
 
 
     std::cout<<"line begin;\n";
+    std_count_ifAndCount();
 
+//    forEachALL();
 //    std_permutation();
-    unitializedCopyN();
+//    unitializedCopyN(); https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n
 
 //    std_sort(); //sort
 //    std_partition();
