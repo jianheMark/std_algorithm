@@ -311,12 +311,34 @@ void std_count_ifAndCount()
     static_assert(distance(v.begin(), v.end())==10);
 
 }
-
+void std_remove()
+{
+    /* Remove all elements satisfying specific criteria from range[First, last)
+     * and return a past-the-end iterator for the new end range.
+     */
+    std::string str1 = "Text with some    spaces";
+    // the white spaces are removed from the string logically.
+    auto noSpaceEnd = std::remove(str1.begin(), str1.end(),' ');
+    std::cout<<std::string_view(str1.begin(), noSpaceEnd)<<" size: "<<str1.size()<<'\n';
+    str1.erase(noSpaceEnd,str1.end());
+    //The spaces are removed from the string physically.
+    std::cout<<str1<<" size: "<<str1.size()<<'\n';
+    std::cout<<"test std_if\n";
+    std::string str2 = "Text\n with\tsome \t   whitespaces\n\n";
+    str2.erase(
+            std::remove_if(
+                    str2.begin(), str2.end(),
+                    [] (unsigned char x) {return std::isspace(x);}),
+                    str2.end()
+            );
+    std::cout<<str2<<'\n';
+}
 int main() {
 
 
     std::cout<<"line begin;\n";
-    std_count_ifAndCount();
+    std_remove();
+//    std_count_ifAndCount();
 
 //    forEachALL();
 //    std_permutation();
