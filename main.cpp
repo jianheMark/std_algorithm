@@ -87,6 +87,14 @@ void std_copy(){
     std::copy_backward(from_vector.begin(), from_vector.end(), to_vector.end());
     std::cout<<"to_vector contains: ";
     for (auto i: to_vector) std::cout<<i<<' ';
+    std::vector<int>out;
+    std::cout<<"copy_n module.\n";
+    std::copy_n(to_vector.begin()+4, 6,std::back_inserter(out));
+    auto print = [] (const int& i) {std::cout<<i<<' ';};
+    std::for_each(out.begin(), out.end(), print);
+
+
+
 
 }
 
@@ -349,7 +357,19 @@ void std_remove()
     std::cout<<"\"\n";
 
 }
+void std_repladce()
+{
+    /* Replaces all elements satisfying specific criteria with new_value in the range [first,last),
+     *
+     */
+    std::array<int, 10> s {5,6,7,3,1,8,9,10,2,4};
+    std::replace(s.begin(), s.end(),8, 88);
+    for (int a: s) {
+        std::cout<< a<<" ";
+    }
+    std::cout<<'\n';
 
+}
 void std_unique_copy()
 {
     /* Copies the elements from range [first, last), to another range beginning
@@ -368,10 +388,10 @@ void std_unique_copy()
 
 int main() {
 
-
-    std::cout<<"line begin;\n";
+       std_repladce();
+//    std::cout<<"line begin;\n";
 //    std_remove();
-    std_unique_copy(); //https://en.cppreference.com/w/cpp/algorithm/unique_copy
+//    std_unique_copy(); //https://en.cppreference.com/w/cpp/algorithm/unique_copy
 //    std_count_ifAndCount();
 
 //    forEachALL();
@@ -397,7 +417,7 @@ int main() {
 
     //    std::vector<int> v{1,5,8};
 //    std_allof_anyof_noneof();
-//    std_copy(); //https://en.cppreference.com/w/cpp/algorithm/copy
+    std_copy(); //https://en.cppreference.com/w/cpp/algorithm/copy
 
 // any_of demo.
 //    if(std::any_of(v.cbegin(),v.cend(), DivisibleBY(7)))
