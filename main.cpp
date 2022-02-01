@@ -357,17 +357,24 @@ void std_remove()
     std::cout<<"\"\n";
 
 }
-void std_repladce()
+void std_replace()
 {
     /* Replaces all elements satisfying specific criteria with new_value in the range [first,last),
-     *
+     *  std::replace_if Replaces all elements for which predicate p returns true.
      */
+    std::cout<<"std:;replace code block begins.\n";
     std::array<int, 10> s {5,6,7,3,1,8,9,10,2,4};
     std::replace(s.begin(), s.end(),8, 88);
     for (int a: s) {
         std::cout<< a<<" ";
     }
     std::cout<<'\n';
+    std::replace_if(s.begin(), s.end(),
+                    std::bind(std::less<>(), std::placeholders::_1,5),55);
+    for (int a : s) {
+        std::cout<< a<<" ";
+    }
+    std::cout<<"std_replace code block ends.\n";
 
 }
 void std_unique_copy()
@@ -388,7 +395,7 @@ void std_unique_copy()
 
 int main() {
 
-       std_repladce();
+    std_replace();
 //    std::cout<<"line begin;\n";
 //    std_remove();
 //    std_unique_copy(); //https://en.cppreference.com/w/cpp/algorithm/unique_copy
