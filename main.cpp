@@ -349,11 +349,29 @@ void std_remove()
     std::cout<<"\"\n";
 
 }
+
+void std_unique_copy()
+{
+    /* Copies the elements from range [first, last), to another range beginning
+     * at d_first in such a way that there are no consecutive equal elements.
+     */
+    std::string s1 = "The     string  with   many    spaces!";
+    std::cout<<"Before: "<<s1<<'\n';
+    std::string s2;
+    /*
+     * Elements are compared using the given binary predicate p.
+     */
+    std::unique_copy(s1.begin(), s1.end(), std::back_inserter(s2),
+                     [] (char c1, char c2) {return c1 == ' ' && c2 == ' ';});
+    std::cout<<"After: "<<s2<<'\n';
+}
+
 int main() {
 
 
     std::cout<<"line begin;\n";
-    std_remove();
+//    std_remove();
+    std_unique_copy(); //https://en.cppreference.com/w/cpp/algorithm/unique_copy
 //    std_count_ifAndCount();
 
 //    forEachALL();
