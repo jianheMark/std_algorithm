@@ -7,6 +7,8 @@
 #include <numeric>
 #include <functional>
 #include <random>
+#include <tuple>
+#include <memory>
 
 //print sequences.
 auto print_seq = [](auto rem,auto first, auto last){
@@ -210,12 +212,45 @@ void std_permutation()
              << v3<<"is a permutation of " <<v1<<": "<<std::boolalpha
              <<std::is_permutation(v1.begin(),v1.end(),v3.begin());
 }
+void unitializedCopyN()
+{
+    /* Copies count elements from a range beginning at first to an uninitialized memory area beginning at d_first.
+     *
+     */
+    std::vector<std::string> v = {"This", "is","an","Example"};
+    std::string *p;
+    //std::size_t is the unsigned integer type of the result of size_of operator.
+    std::size_t sz;
+    /*
+     * Reinventing the wheel, but this time with prettier spokes!
+     * This function tries to obtain storage for __len adjacent Tp objects.
+     * The objects themselves are not constructed, of course. A pair
+     * is returned containing the buffer s address and capacity (in the units of sizeof(_Tp)),
+     * or a pair of 0 values if no storage can be obtained.
+     * Note that the capacity obtained may be less than that requested if the memory is unavailable;
+     * you should compare len with the .second return value. Provides the nothrow exception guarantee
+     */
+    std::tie(p,sz) = std::get_temporary_buffer<std::string>(v.size());
+
+    sz = std::min(sz,v.size()); // both same: 4.
+
+    std::uninitialized_copy_n(v.begin(),sz,p);
+
+    for (std::string* i = p; i != p+sz; ++i) {
+        std::cout<<*i<<' ';
+        i->~basic_string<char>();
+    }
+    // Deallocates storage previously allocated with std::get_temporary_buffer.
+    std::return_temporary_buffer(p);
+
+}
 int main() {
 
 
     std::cout<<"line begin;\n";
 
-    std_permutation();
+//    std_permutation();
+    unitializedCopyN();
 
 //    std_sort(); //sort
 //    std_partition();
