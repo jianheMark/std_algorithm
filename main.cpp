@@ -9,6 +9,7 @@
 #include <random>
 #include <tuple>
 #include <memory>
+#include <iomanip>
 
 //print sequences.
 auto print_seq = [](auto rem,auto first, auto last){
@@ -332,6 +333,21 @@ void std_remove()
                     str2.end()
             );
     std::cout<<str2<<'\n';
+    /* std::remove_copy: copies elements from range [first,last), to another range beginning at d_first,
+     * omitting the elements which satisfy specific criteria.Source and destination not overlap.
+     */
+    //    std::string remove_str("psql");
+    std::string str3 = "#Return #Value #Optimization";
+    std::cout<<"before: "<<std::quoted(str3)<<'\n';
+    std::cout<<"After: \"";
+
+    std::remove_copy(str3.begin(),
+                     str3.end(),
+                     std::ostream_iterator<char>(std::cout),
+                     'R'
+                   );
+    std::cout<<"\"\n";
+
 }
 int main() {
 
