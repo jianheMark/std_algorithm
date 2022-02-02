@@ -502,7 +502,59 @@ void std_set_operation()
             <<std::includes(v1.begin(),v1.end(),
                             v6.begin(),v6.end(),cmp_nocase)<<'\n';
 
+    /* std::set_difference. Copies the elements from the sorted range[first1,last1)
+     * which is not found in sorted range[first2,last2) to the range beginning at d_first.
+     *
+     */
+    std::vector<int> int_v1 {1,2,5,6,5,9};
+    std::vector<int> int_v2 {2,5,7};
+    std::vector<int> diff;
+    std::set_difference(
+            int_v1.begin(), int_v1.end(),
+            int_v2.begin(), int_v2.end(),
+            std::inserter(diff,diff.begin())
+            );
+    for (auto i: int_v1) std::cout<<i<<' ';
+    std::cout<<"minus ";
+    for (auto i: int_v2) std::cout<<i<<' ';
+    std::cout<<"is: ";
+    for (auto i: diff) std::cout<<i<<' ';
+    std::cout<<'\n';
+    std::vector<int> v_intersection;
+    /*
+     *
+     */
+    std::set_intersection(int_v1.begin(), int_v1.end(),
+                          int_v2.begin(), int_v2.end(),
+                          std::back_inserter(v_intersection));
+    for(auto i:v_intersection) std::cout<<i<<' ';
+    /*
+     * Computes symmetric difference of two sorted range: the elements that are found
+     * in either of the ranges, but not in both of them are copied to the range beginning at d_first.
+     * The result range is also sorted.
+     */
+    std::vector<int> v_symDifference;
+    std::sort(int_v1.begin(), int_v1.end());
+    std::sort(int_v2.begin(), int_v2.end());
 
+    std::set_symmetric_difference(
+            int_v1.begin(), int_v1.end(),
+            int_v2.begin(), int_v2.end(),
+            std::back_inserter(v_symDifference)
+            );
+    std::cout<<"The symmetric difference is: ";
+    for (auto n:v_symDifference) std::cout<<n<<' ';
+    /*
+     * Constructs a sorted union beginning at d_first consisting of the set
+     * of elements present in one or both sorted range[first1,last1) and [first2,last2).
+     */
+    std::vector<int> unionDest1;
+    std::set_union(int_v1.begin(),int_v1.end(),
+                   int_v2.begin(), int_v2.end(),
+                   std::back_inserter(unionDest1));
+    std::cout<<"After union, the union elements: ";
+    for (auto i: unionDest1) std::cout<<i <<' ';
+    std::cout<<'\n';
 }
 int main() {
         std::cout<<"line begin;\n";
