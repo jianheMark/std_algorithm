@@ -630,12 +630,28 @@ void std_transform()
     for (auto i: ordinals) {
         std::cout<<' '<<i;
     }
-
-
 }
+
+void std_fill_n()
+/*
+ * Assigns the given value to the first count elements in the range beginning at first. if count >0
+ * Does nothing otherwise.
+ */
+{
+    std::vector<int> s;
+    for (int i=1; i<10; i++)
+        {s.emplace(s.end(),i);}
+
+    std::cout<<s;
+    std::fill_n(s.begin(),2, 11);
+    std::cout<<s;
+    std::cout<<"Now doing rotate."
+}
+
 int main() {
         std::cout<<"line begin;\n";
-        std_transform();
+        std_fill_n();
+//        std_transform();
 //        std_merge();
 //        std_set_operation();
 //        std_heap();
