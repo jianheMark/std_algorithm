@@ -11,6 +11,11 @@
 #include <memory>
 #include <iomanip>
 
+template <class Container, class Size, class T>
+bool consecutive_values(const Container& c, Size count,const T& v)
+{
+    return std::search_n(std::begin(c),std::end(c), count,v) != std::end(c);
+}
 //print sequences.
 auto print_seq = [](auto rem,auto first, auto last){
     for(std::cout<<rem; first != last; std::cout<<*first++ <<' ') {}
@@ -673,9 +678,21 @@ void adjacent_find()
     }
 }
 
+void std_searchN()
+{
+//    std::search_n searches a range for a number of consecutive copies of an element.
+    const char sequences[] = "112903890238790111";
+    std::cout<<std::boolalpha;
+    std::cout<<"Has 4 consecutive ones: "
+            <<consecutive_values(sequences,4,'1')<<'\n';
+    std::cout<<"Has 3 consecutive ones: "
+            <<consecutive_values(sequences,3,'1')<<'\n';
+}
+
 int main() {
         std::cout<<"line begin;\n";
-        adjacent_find();
+        std_searchN();
+//        adjacent_find();
 //        std_fill_n();
 //        std_transform();
 //        std_merge();
