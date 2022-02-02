@@ -556,9 +556,88 @@ void std_set_operation()
     for (auto i: unionDest1) std::cout<<i <<' ';
     std::cout<<'\n';
 }
+
+void std_merge()
+{
+    /*
+     * Merges two sorted ranges [first1,last1) and[first2,last2) into
+     * one sorted range beginning at d_first.
+     *
+     */
+    // fill the vectors with random numbers.
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_int_distribution<> dis(0,9);
+    std::vector<int> v1(10), v2(10);
+    std::generate(v1.begin(), v1.end(),std::bind(dis,std::ref(mt)));
+    std::generate(v2.begin(),v2.end(),std::bind(dis,std::ref(mt)));
+
+    //sort
+    std::sort(v1.begin(),v1.end());
+    std::sort(v2.begin(),v2.end());
+    // output.
+    std::cout<<"V1 is: ";
+    for (auto s: v1) std::cout<<s<<' ';
+    std::cout<<'\n';
+    std::cout<<"V1 is: ";
+    for (auto s: v1) std::cout<<s<<' ';
+//    std::cout<<"V2: ";
+//    for (auto i: v1) std::cout<<i<<' ';
+    // output v1
+//    std::cout << "v1 : ";
+//    std::copy(v1.begin(), v1.end(), std::ostream_iterator<int>(std::cout, " "));
+//    std::cout << '\n';
+//
+//    // output v2
+//    std::cout << "v2 : ";
+//    std::copy(v2.begin(), v2.end(), std::ostream_iterator<int>(std::cout, " "));
+//    std::cout << '\n';
+
+    //merge
+    std::vector<int> dst_Merge;
+    std::merge(v1.begin(),v1.end(),
+               v1.begin(),v1.end(),
+               std::back_inserter(dst_Merge)
+               );
+    std::cout<<"\nThe merged output is: ";
+    std::copy(dst_Merge.cbegin(),
+              dst_Merge.cend(),
+              std::ostream_iterator<int>(std::cout, " "));
+    std::cout<<'\n';
+}
+void std_transform()
+{
+    /*
+     * std::transform applies the given function to a range and stores
+     * the results in another range, beginning at d_first.
+     */
+    std::string s("Hello");
+    std::transform(
+            s.begin(), s.end(),
+            s.begin(),
+            [] (unsigned char c) -> unsigned  char {return std::toupper(c);}
+            );
+    std::vector<std::size_t> ordinals;
+    /*
+     * std::size_t is the unsigned integer type of the result of the sizeof operator.
+     */
+    std::transform(
+            s.begin(), s.end(),
+            std::back_inserter(ordinals),
+            [] (unsigned char c) -> std::size_t {return c;}
+            );
+    std::cout<<s<<':';
+    for (auto i: ordinals) {
+        std::cout<<' '<<i;
+    }
+
+
+}
 int main() {
         std::cout<<"line begin;\n";
-        std_set_operation();
+        std_transform();
+//        std_merge();
+//        std_set_operation();
 //        std_heap();
 //        std_rotate_copy();
 //    std_replace();
