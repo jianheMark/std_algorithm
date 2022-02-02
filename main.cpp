@@ -422,13 +422,93 @@ void std_rotate_copy()
         std::cout<<i<<' ';
     }
     std::cout<<'\n';
+}
+
+void std_heap()
+{
+    /* std::is_heap_until Examine the range [first, last) and find the largest range beginning at first which is max heap.
+     * std::is_heap Checks if the elements in range [first, last) are a max heap.
+     * std::push_heap Inserts the element at the position last-1 into the max heap defined by the range[first, last-1).
+     * std::pop_heap Swap the value in the position first and the position last-1 and makes the subrange [first, last-1)
+     *  into a max heap.
+     *  std::sort_heap Converts the max heap [first, last) into a sorted range in ascending order.
+     */
+    std::vector<int> v {3,1,4,1, 6,9};
+    std::cout<<"Initially, v: "<< v;
+    std::cout<<'\n';
+    if(!std::is_heap(v.begin(), v.end())) {
+        std::cout<<"Making heap....\n";
+        std::make_heap(v.begin(), v.end());
+    }
+    std::cout<<"After make_heap, v: ";
+    std::cout<<v;
+    v.push_back(2);
+    v.push_back(11);
+    std::cout<<"Print out v again: " << v<<'\n';
+    auto heap_end = std::is_heap_until(v.begin(), v.end());
+    std::cout<<"Only heap: ";
+    for (auto i= v.begin(); i != heap_end; ++i) std::cout<< *i<<' ';
+    std::cout<<'\n';
+    std::push_heap(v.begin(), v.end());
+    std::cout<<"After push heap: ";
+    std::cout<<v;
+    std::cout<<'\n';
+    std::pop_heap(v.begin(),v.end()); //move the largest to the end.
+    std::cout<<"After pop-heap, now the position is "<<v<<'\n';
+    int largest = v.back();
+    v.pop_back();
+    std::cout<<"Heap V without the largest: "<<v<<'\n';
+    std::sort_heap(v.begin(), v.end());
+    std::cout<<"\n sorted: \t"<<v;
+}
+void std_set_operation()
+{
+    /*
+     *
+     */
+    std::vector<char> v1{'a','b','c','f','h','x'};
+    std::vector<char> v2{'a','b','c'};
+    std::vector<char> v3 {'a','c'};
+    std::vector<char> v4 {'g'};
+    std::vector<char> v5 {'a','c','g'};
+    for (auto i:v1) std::cout<<i<<' ';
+    std::cout<<"\nIncludes: \n"<<std::boolalpha;
+
+    for(auto i:v2) std::cout<<i<<' ';
+    std::cout<<": "<<std::includes(v1.begin(), v1.end(),
+                                   v2.begin(), v2.end())<<'\n';
+    for (auto i:v3) std::cout<<i<<' ';
+    std::cout<<": "<<std::includes(v1.begin(), v1.end(),
+                                   v3.begin(), v3.end())<<'\n';
+    for (auto i: v4) std::cout<<i<<' ';
+    std::cout<<": "<<std::includes(v1.begin(), v1.end(),
+                                   v4.begin(), v4.end())<<'\n';
+    for (auto i: v5) std::cout<<i<<' ';
+    std::cout<<": "<<std::includes(
+            v1.begin(), v1.end(),
+            v5.begin(), v5.end()
+            )<<'\n';
+
+    auto cmp_nocase = [] (char a, char b) {
+        return std::tolower(a) <std::tolower(b);
+    };
+    std::vector<char> v6 {'A','B','C'};
+
+    for (auto i: v6) std::cout<<i <<' ';
+    /* comp. The signature of the compatison function should be equivalent to the following
+     * bool comp (const Type1 &a, const Type2 &b).
+    */
+    std::cout<<": (case-sensitive) "
+            <<std::includes(v1.begin(),v1.end(),
+                            v6.begin(),v6.end(),cmp_nocase)<<'\n';
 
 
 }
-
 int main() {
         std::cout<<"line begin;\n";
-        std_rotate_copy();
+        std_set_operation();
+//        std_heap();
+//        std_rotate_copy();
 //    std_replace();
 
 //    std_remove();
