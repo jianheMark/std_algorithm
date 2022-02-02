@@ -645,12 +645,38 @@ void std_fill_n()
     std::cout<<s;
     std::fill_n(s.begin(),2, 11);
     std::cout<<s;
-    std::cout<<"Now doing rotate."
+    std::cout<<"Now doing rotate.";
+    std::rotate(s.begin(), s.begin()+2, s.end());
+    std::cout<<"\n"<<s;
+}
+void adjacent_find()
+{
+
+    //Searches the range [first, last) for two consecutive identical elements.
+    std::vector<std::string> v1{"ws", "hi","hello","hello","he","yes"};
+    auto i1 = std::adjacent_find(v1.begin(), v1.end());
+    if (i1 == v1.end()) {
+        std::cout<<"No matching adjacent elements\n";
+    }
+    else {
+        std::cout<<"the first adjacent pair of equal elements at: "
+                <<std::distance(v1.begin(), i1)<<'\n';
+    }
+
+    //todo std::greater comparison.
+    auto i2 = std::adjacent_find(v1.begin(), v1.end(),
+                                 std::greater<>());
+    if (i2 == v1.end()) {std::cout<<"The entire vector is sorted in ascending order\n";}
+    else {
+        std::cout<<"The last element in the non-decreasing subsequence is at: "
+            <<std::distance(v1.begin(), i2) <<'\n';
+    }
 }
 
 int main() {
         std::cout<<"line begin;\n";
-        std_fill_n();
+        adjacent_find();
+//        std_fill_n();
 //        std_transform();
 //        std_merge();
 //        std_set_operation();
@@ -701,6 +727,4 @@ int main() {
 //        std_mt19937_demo(); // https://www.geeksforgeeks.org/stdmt19937-class-in-cpp/
 
     std::cout<<"\t---line ends;\n";return 0;
-
-
 }
