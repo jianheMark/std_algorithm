@@ -11,6 +11,13 @@
 #include <memory>
 #include <iomanip>
 
+template<class ForwardIt>
+void selection_sort(ForwardIt begin, ForwardIt end)
+{
+    for (ForwardIt i = begin; i!= end; ++i)
+        std::iter_swap(i, std::min_element(i, end));
+}
+
 template <class Container, class Size, class T>
 bool consecutive_values(const Container& c, Size count,const T& v)
 {
@@ -688,10 +695,74 @@ void std_searchN()
     std::cout<<"Has 3 consecutive ones: "
             <<consecutive_values(sequences,3,'1')<<'\n';
 }
+void iterSwap()
+{
+    //swap the values of the elements the given iterators are pointing to.
+
+     //A standard interface to a platform-specific non-deterministic random number generator (if any are available).
+    //Default constructs a new std::random_device object with an implementation-defined token.
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(-10, 10);
+    std::vector<int> v;
+    std::generate_n(
+            std::back_inserter(v),
+            20,
+            std::bind(dist, gen)
+            );
+    std::cout<<"Before sort: ";
+    for(auto e : v) std::cout<<e<<" ";
+    selection_sort(v.begin(),v.end());
+    std::cout<<"After swap sort: \n";
+    for (auto e: v) std::cout<<e<<" ";
+    std::cout<<"\n";
+}
+void std_MATH()
+{
+    /*
+     *
+     * template< class InputIt, class T, class BinaryOperation >
+            T accumulate( InputIt first, InputIt last, T init,
+              BinaryOperation op );
+         accumulate.      Computes the sum of the given value init and the element in the range [first, last)
+     */
+    std::vector<int> int_v(10);
+    std::iota(int_v.begin(), int_v.end(),1);
+    int sum = std::accumulate(int_v.begin(), int_v.end(),0);
+    int product =  std::accumulate(int_v.begin(), int_v.end(),1,
+                                   std::multiplies<int>());
+    auto dash_fold = [] (std::string a, int b) {
+        return std::move(a) + '-' + std::to_string(b);
+    };
+    std::string rs = std::accumulate(
+            std::next(int_v.rbegin()),
+            int_v.rend(),
+            std::to_string(int_v.back()),
+            dash_fold
+            );
+    std::cout<<"1 to 10, sum is: "<<sum
+            <<" product is "<<product
+            <<" dash seperated string: "<< rs<<'\n';
+    //std::inner_product
+    std::cout<<"inner_product\n";
+    std::vector<int> int_v1(5);
+    std::vector<int> int_v2{5,4,2,3,1};
+    std::iota(int_v1.begin(), int_v1.end(),0);
+
+    int inner_product1 = std::inner_product(int_v1.begin(), int_v1.end(), int_v2.begin(),0);
+    std::cout<<"Inner product of a and b: " <<inner_product1<<'\n';
+    int inner_product2 = std::inner_product(int_v1.begin(),int_v1.end(),int_v2.begin(),0,
+                                            std::plus<>(),std::equal_to<>());
+
+     // first check if they are equal, if they are equal then return 1. then accunmulate all the "1"
+    std::cout<<"Number of pairwise matches between a and b: " <<inner_product2<<'\n';
+}
 
 int main() {
         std::cout<<"line begin;\n";
-        std_searchN();
+        std_MATH();
+//        iterSwap();
+//        std_searchN();
 //        adjacent_find();
 //        std_fill_n();
 //        std_transform();
@@ -743,5 +814,6 @@ int main() {
 
 //        std_mt19937_demo(); // https://www.geeksforgeeks.org/stdmt19937-class-in-cpp/
 
-    std::cout<<"\t---line ends;\n";return 0;
+    std::cout<<"\t---line ends;\n";
+    return 0;
 }
