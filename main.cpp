@@ -10,7 +10,9 @@
 #include <tuple>
 #include <memory>
 #include <iomanip>
-
+#include <execution>
+#include <chrono>
+int times_10(int x) {return x * 10;}
 template<class ForwardIt>
 void selection_sort(ForwardIt begin, ForwardIt end)
 {
@@ -756,6 +758,86 @@ void std_MATH()
 
      // first check if they are equal, if they are equal then return 1. then accunmulate all the "1"
     std::cout<<"Number of pairwise matches between a and b: " <<inner_product2<<'\n';
+    //Computes the differences between the second and the first of each adjacent pair
+    // of elements of the range [first, last) and write them to the range beginning at d_first + 1.
+    std::vector int_v3 {2,4,6,8,10,12,14,16,18,20};
+    std::adjacent_difference(int_v3.begin(), int_v3.end(),int_v3.begin());
+    std::cout<<int_v3<<'\n';
+    std::array<int,10> a {1};
+    /*Computes the differences between the second
+    and the first of each adjacent pair of elements of the range [first, last)
+    and writes them to the range beginning at d_first + 1
+     */
+
+    std::adjacent_difference(begin(a),std::prev(end(a)),std::next(begin(a)), std::plus<>{});
+    std::vector<int> int_v4(10,2);
+    //std::partial_sum: Computes the partial sums of the elements in the subranges of the range [first,last)
+    //and write them to the range beginning at d_first.
+    std::cout<<"Using partial_sum for int_v4: ";
+    std::partial_sum(int_v4.begin(), int_v4.end(),
+                    std::ostream_iterator<int>(std::cout," "));
+    std::cout<<'\n';
+    std::partial_sum(
+            int_v4.begin(), int_v4.end(),
+            int_v4.begin(),std::multiplies<int>());
+    std::cout<<"after partial_sum transformation: "<<int_v4;
+    //std::reduce  	similar to std::accumulate, except out of order
+    std::vector<double> v(10'000'007, 0.5);
+    auto t1 = std::chrono::high_resolution_clock::now();
+    double result = std::accumulate(v.begin(), v.end(),0.0);
+    auto t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> ms = t2 -t1;
+    std::cout<<std::fixed<<"std::accumulate result "<<result
+                        <<" took " <<ms.count()<<" ms\n";
+    {
+        auto t3 = std::chrono::high_resolution_clock::now();
+        double result1 = std::reduce(std::execution::par, v.begin(), v.end());
+        auto t4 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> ms1 = t4-t3;
+        std::cout<<"std::reduce result "<<result1<<" took " <<ms1.count()<<" ms\n";
+    }
+    std::vector data {3,1,4,1,5,9,2,6};
+    /*
+     * Computes an exclusive prefix sum operation using binary_op, using
+     * init as the init value, and write the results to the range beginning
+     * at d_first. "exclusive" means that the i-th input element is not included in the i-th sum.
+     */
+    std::cout<<"data vector as: "<<data<<'\n';
+    std::cout<<"data vector exclusive sum: ";
+    std::exclusive_scan(data.begin(),
+                        data.end(),
+                        std::ostream_iterator<int>(std::cout, " ")
+                        ,-1);
+    std::cout<<"\n\n Data vector Exclusive product: ";
+    std::exclusive_scan(
+            data.begin(),data.end(),
+            std::ostream_iterator<int>(std::cout," "),
+                    1,
+                    std::multiplies<int>{}
+            );
+    std::cout<<"\n";
+    std::cout<<"10 Times exclusive sum: ";
+    /*
+     * template< class InputIt, class OutputIt, class T,
+          class BinaryOperation, class UnaryOperation>
+            OutputIt transform_exclusive_scan(
+                        InputIt first, InputIt last, OutputIt d_first, T init,
+                        BinaryOperation binary_op, UnaryOperation unary_op);
+     * unary_op - unary FunctionObject that will be applied to each element of the input range.
+     * The return type must be acceptable as input to binary_op.
+
+     * binary_op, binary FunctionObject that will be applied in to the result of unary_op, the result of other binary
+     * and init.
+     */
+    std::transform_exclusive_scan(
+            data.begin(),
+            data.end(),
+            std::ostream_iterator<int>(std::cout, " "),
+                    0,
+                    std::plus<int>{ },
+                    times_10
+            );
+
 }
 
 int main() {
@@ -770,16 +852,13 @@ int main() {
 //        std_set_operation();
 //        std_heap();
 //        std_rotate_copy();
-//    std_replace();
-
+//        std_replace();
 //    std_remove();
 //    std_unique_copy(); //https://en.cppreference.com/w/cpp/algorithm/unique_copy
 //    std_count_ifAndCount();
-
 //    forEachALL();
 //    std_permutation();
 //    unitializedCopyN(); https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n
-
 //    std_sort(); //sort
 //    std_partition();
     {
