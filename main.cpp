@@ -918,7 +918,23 @@ void std_ranges_non_modifying_sequence_operation()
     //todo understand &pair::second. html-book-20220201/reference/en/cpp/algorithm/ranges/for_each.html
     std::ranges::for_each(pairs, print, &pair::second);
     print('\n');
-//--------------------------std::ranges for_each code block----------------------
+//--------------------------std::ranges for_each code block end----------------------
+
+//--------------------------std::ranges for_each_n code block----------------------
+    auto printContainer = [] (std::string_view name, auto const& v) {
+        std::cout<<name<<": ";
+        //--n means decrement n before using it in an expression.
+        //n-- means decrement n after using it in an expression.
+        for (auto n = v.size(); const auto& e:v) {
+            std::cout<<e<<(--n ? "," :"\n");
+        }
+    };
+    std::array int_arr1 {9,1,13,94,5};
+    printContainer("int_arr1", int_arr1);
+
+
+//--------------------------std::ranges for_each_n code block----------------------
+
 
 
 }
