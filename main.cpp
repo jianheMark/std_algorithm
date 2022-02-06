@@ -925,6 +925,8 @@ void std_ranges_non_modifying_sequence_operation()
         std::cout<<name<<": ";
         //--n means decrement n before using it in an expression.
         //n-- means decrement n after using it in an expression.
+        //An array cannot have zero size.
+        //https://stackoverflow.com/questions/9722632/what-happens-if-i-define-a-0-size-array-in-c-c/9723093
         for (auto n = v.size(); const auto& e:v) {
             std::cout<<e<<(--n ? "," :"\n");
         }
