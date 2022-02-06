@@ -934,7 +934,6 @@ void std_ranges_non_modifying_sequence_operation()
     std::array int_arr1 {9,1,13,94,5};
     printContainer("int_arr1", int_arr1);
 //--------------------------std::ranges for_each_n code block ends----------------------
-//--------------------------std::ranges for_each_n code block ends----------------------
     const int int_1 = 3;
     const int int_2 = 5;
     const auto v_int1 = {11, 10, 12, 89,3};
@@ -952,14 +951,23 @@ void std_ranges_non_modifying_sequence_operation()
     auto is_evenFunc_scope =  [](int x) { return x % 2 == 0;};
     if (auto result = std::ranges::find_if(v_int1.begin(),v_int1.end(),is_evenFunc_scope);
         result != v_int1.end()) {
-        std::cout<<"int_1 vector have odds value "<<*result<<'\n';
+        std::cout<<"int_1 vector have even value like "<<*result<<'\n';
     }else {
         std::cout<<"int_1 vector don't any even int value.";
     }
 
-
-
-//--------------------------std::ranges ends_with code block ends----------------------
+    auto divide_13 = [] (int x) {return x % 13 ==0; };
+    if( auto result = std::ranges::find_if(v_int1.begin(),v_int1.end(),divide_13); result != v_int1.end()){
+        std::cout<<*result <<" is one of the element can be divided by 13.\n";
+    }else{
+        std::cout<<"NO element can be divided by 13.\n";
+    }
+    if (auto result = std::ranges::find_if_not(v_int1.begin(), v_int1.end(),divide_13); result != v_int1.end()){
+        std::cout<<"The first element in v_int1 cannot be divided by 13 is"<<*result<<'\n';
+    }else {
+        std::cout<<"all element can be divided by 13.\n";
+    }
+//--------------------------std::ranges find_if, find_if_not code block ends----------------------
 
 
 
