@@ -933,9 +933,33 @@ void std_ranges_non_modifying_sequence_operation()
     };
     std::array int_arr1 {9,1,13,94,5};
     printContainer("int_arr1", int_arr1);
+//--------------------------std::ranges for_each_n code block ends----------------------
+//--------------------------std::ranges for_each_n code block ends----------------------
+    const int int_1 = 3;
+    const int int_2 = 5;
+    const auto v_int1 = {11, 10, 12, 89,3};
+    if (std::ranges::find(v_int1, int_1) != v_int1.end()) {
+        std::cout<<"v_int1 contains: "<<int_1<<'\n';
+    } else {
+        std::cout<<"v_int1 does not contain: "<<int_2<<'\n';
+    }
+    if (std::ranges::find(v_int1, int_2) != v_int1.end()) {
+        std::cout<<"v_int1 contains: "<<int_2<<'\n';
+    } else {
+        std::cout<<"v_int1 does not contains: "<<int_2<<'\n';
+    }
+//find_if return iterator to the first element satisfying the condition or iterator equal to last if no such element is found.
+    auto is_evenFunc_scope =  [](int x) { return x % 2 == 0;};
+    if (auto result = std::ranges::find_if(v_int1.begin(),v_int1.end(),is_evenFunc_scope);
+        result != v_int1.end()) {
+        std::cout<<"int_1 vector have odds value "<<*result<<'\n';
+    }else {
+        std::cout<<"int_1 vector don't any even int value.";
+    }
 
 
-//--------------------------std::ranges for_each_n code block----------------------
+
+//--------------------------std::ranges ends_with code block ends----------------------
 
 
 
