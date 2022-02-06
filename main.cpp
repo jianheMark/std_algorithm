@@ -12,6 +12,19 @@
 #include <iomanip>
 #include <execution>
 #include <chrono>
+#include <functional>
+#include <cassert>
+#include <utility>
+template<class Iter>
+    void merge_sort(Iter first, Iter last)
+{
+    if (last -first >1) {
+        Iter middle = first + (last -first)/2;
+        merge_sort(first, middle);
+        merge_sort(middle,last);
+        std::inplace_merge(first, middle,last);
+    }
+}
 int times_10(int x) {return x * 10;}
 template<class ForwardIt>
 void selection_sort(ForwardIt begin, ForwardIt end)
@@ -618,6 +631,15 @@ void std_merge()
               dst_Merge.cend(),
               std::ostream_iterator<int>(std::cout, " "));
     std::cout<<'\n';
+    /*
+     * Merges two consecutive sorted ranges [first,middle) and [middle, last)
+     * into one sorted range [first,last)
+     */
+    std::vector<int> v_inplace_merge{8,2,-2,0,11,11,1,7,3};
+    std::cout<<"Before inpalce_merge: "<<v_inplace_merge<<'\n';
+    merge_sort(v_inplace_merge.begin(),v_inplace_merge.end());
+    std::cout<<"aFTER INplace_merge: "<<v_inplace_merge<<'\n';
+
 }
 void std_transform()
 {
@@ -644,6 +666,7 @@ void std_transform()
     for (auto i: ordinals) {
         std::cout<<' '<<i;
     }
+
 }
 
 void std_fill_n()
@@ -837,12 +860,93 @@ void std_MATH()
                     std::plus<int>{ },
                     times_10
             );
+    std::cout<<"data Vetcor with transform_inclusive_scan \n";
+    std::transform_inclusive_scan(
+            data.begin(),
+            data.end(),
+            std::ostream_iterator<int>(std::cout," "),
+                    std::plus<int>{ },
+                    times_10
+            );
 
 }
+void std_ranges_non_modifying_sequence_operation()
+{
+    std::vector<int> v(10,2);
+    std::partial_sum(v.cbegin(),v.cend(),v.begin());
+//    std::cout<<v[2];
+    std::cout<<"Amount the numbers: ";
+    //Copies the element in the range, defined by [first ,last), to another range beginning at result.
+    std::ranges::copy(v,std::ostream_iterator<int>(std::cout, " "));
+    std::cout<<'\n';
 
+    if (std::ranges::all_of(v.cbegin(),v.cend(),[](int i) { return i % 2 == 0;})) {
+        std::cout<<"All numbers are even. \n";
+    }
+
+    if (std::ranges::none_of(v,std::bind(std::modulus<>(), std::placeholders::_1,2))) {
+        std::cout<<"None of them are odd.\n";
+    }
+
+    auto DivisibleBy = [] (int d) {
+        return [d] (int m) {return m % d == 0;};
+    };
+
+    if(std::ranges::any_of(v, DivisibleBy(7))) {
+        std::cout<<"At least one number is divisible by 7";
+    }
+//--------------------------std::ranges for_each code block----------------------
+    std::vector<int> nums {3,4,2,8,17,289};
+    auto print = [](const auto& n) {std::cout<<' '<<n;};
+    std::cout<<"Before vector nums: ";
+    std::ranges::for_each(std::as_const(nums), print);
+    print('\n');
+
+    std::ranges::for_each(nums, [] (int& n) {++n;});
+
+    //calls SUM::operator() for each number.
+    auto [i,s] = std::ranges::for_each(nums.begin(), nums.end(), SUM());
+    assert(i == nums.end());
+    std::cout<<"Now After: the nums as: ";
+    std::ranges::for_each(nums.cbegin(), nums.cend(), print);
+
+    using pair = std::pair<int,std::string>;
+    std::vector<pair> pairs {{1,"one"}, {2,"two"},{3,"three"}};
+    std::cout<<"Project the pair first::first:";
+    std::ranges::for_each(pairs, print, [](const pair& p) {return p.first; });
+    std::cout<<"\n Project the pair second: ";
+    //todo understand &pair::second. html-book-20220201/reference/en/cpp/algorithm/ranges/for_each.html
+    std::ranges::for_each(pairs, print, &pair::second);
+    print('\n');
+//--------------------------std::ranges for_each code block----------------------
+
+
+}
+void print_5(int n1, int n2, int n3, int n4, int n5) {
+    std::cout<<n1<<' '<<n2<<' '<<n3<<' '<<n4<<' '<<n5;
+}
+int return_one_int(int n1) {
+    return n1;
+}
+struct one_v_one_func{
+    void print_sum(int n1, int n2) {
+        std::cout<<"print the sum of two input parameter: "<< n1 + n2<<'\n';
+    }
+    int data = 10;
+};
+void std_bind(){
+    std::cout<<"1) argument reordering and passing-by-reference: ";
+    int  n = 7;
+    auto f1
+            =  std::bind(print_5, std::placeholders::_2, 42,std::placeholders::_1, std::cref(n),n);
+    n = 10;
+    f1(1,2,1001);
+}
 int main() {
         std::cout<<"line begin;\n";
-        std_MATH();
+//        std_bind();
+        std_ranges_non_modifying_sequence_operation();
+//        std_MATH();
 //        iterSwap();
 //        std_searchN();
 //        adjacent_find();
