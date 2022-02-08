@@ -1078,6 +1078,37 @@ range beginning at result. replacing all elements satisfying specific criteria w
     printContainer("int_arr2",int_arr2);
     std::ranges::replace_if(int_arr2,[](int x) {return 5<x;},5);
     printContainer("int_arr2",int_arr2);
+    std::string temps2;
+    /*
+        constexpr unique_copy_result<I, O>
+        unique_copy( I first, S last, O result, C comp = {}, Proj proj = {} );
+
+     * comp> the binary predicate to compare the projected element.
+     * Copies the elements from the source range [first,last), to the destination range
+     * beginning at the result in such a way that there are no consecutive equal elemenst.
+     *
+     */
+    std::ranges::unique_copy(
+            spacious_string.begin(),spacious_string.end(),
+            std::back_inserter(temps2),
+            [](char c1, char c2) {return c1 == ' ' && c2 == ' ';}
+            );
+    std::cout<<temps2;
+    const auto int_v6 = {-1,+1,+2,-2,-3,+3,-3};
+    printContainer("\nint_v6",int_v6);
+    std::list<int> int_l1;
+    /* Two consecutive element *(i-1) and *i are considered equivalent if
+     * std::invoke(comp, std::invoke(proj, *(i-1)),std::invoke(proj,*i)) == true
+     * where i is an iterator in the range[first +1,last).
+     */
+    std::ranges::unique_copy(
+            int_v6, std::back_inserter(int_l1),
+            {},
+            [] (int x) {return std::abs(x);}
+            );
+    printContainer("list int_l1: ",int_l1);
+
+
 
 
 
