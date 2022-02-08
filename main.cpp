@@ -15,6 +15,22 @@
 #include <functional>
 #include <cassert>
 #include <utility>
+#include <type_traits>
+#include <cmath>
+#include <list>
+//void print_pos(const auto &rem, const auto& v) {
+//    using V = std::remove_cvref<decltype(v)>;
+//    constexpr bool sep { std::is_same_v<typename V::value_type, int>};
+//    std::cout<<rem<<std::showpos;
+//    for (const auto& e: v) std::cout<<e<<(sep ? " ": "");
+//    std::cout<<'\n';
+//}
+auto dice(){
+    static std::uniform_int_distribution<int>distr{1,6};
+    static std::random_device engine;
+    static std::mt19937 noise{engine()};
+    return distr(noise);
+}
 template<class Iter>
     void merge_sort(Iter first, Iter last)
 {
@@ -968,6 +984,89 @@ void std_ranges_non_modifying_sequence_operation()
         std::cout<<"all element can be divided by 13.\n";
     }
 //--------------------------std::ranges find_if, find_if_not code block ends----------------------
+//std::ranges::rotate. Performs a left rotation on the range of elemnts.
+    std::string s_16(16,' ');
+    for (int k{}; k!=5;++k) {
+        std::iota(s_16.begin(),s_16.end(),'A');
+        std::ranges::rotate(s_16,s_16.begin()+k);
+        std::cout<<"Rotate left (" <<k<<"): "<<s_16<<'\n';
+    }
+    std::cout<<'\n';
+    for (int k {}; k!=5; ++k) {
+        std::iota(s_16.begin(),s_16.end(),'A');
+        std::ranges::rotate(s_16,s_16.end()-k);
+        std::cout<<"Rotate right ("<<k<<"): "<<s_16<<'\n';
+    }
+    std::cout<<"\nInsertion sort using `rotate`, step-by-step:\n";
+    s_16 = {'2','4','2','0','5','9','7','3','7','1'};
+
+    for (auto i=s_16.begin();i!=s_16.end();++i) {
+        std::cout<<"i = "<<std::ranges::distance(s_16.begin(),i)<<":";
+        // Returns an iterator pointing to the first element in the range [first, last) that is greater than value
+//        auto upper = ranges::upper_bound(data.begin(), data.end(), 4);
+        std::ranges::rotate(std::ranges::upper_bound(s_16.begin(),i,*i),i,i+1);
+        std::cout<<s_16<<'\n';
+    }
+    std::vector<int> ranges_from_vector(10);
+    std::iota(ranges_from_vector.begin(), ranges_from_vector.end(), 0);
+    std::vector<int>ranges_to_vector;
+    std::ranges::copy(ranges_from_vector.begin(),
+                      ranges_from_vector.end(),
+                      std::back_inserter(ranges_to_vector));
+    std::cout<<"to_vector contains: ";
+    std::ranges::copy(ranges_to_vector,std::ostream_iterator<int>(std::cout," "));
+    std::cout<<'\n';
+    std::cout<<"odd numbers in ranges_to_vector are: ";
+    std::ranges::copy_if(ranges_to_vector, std::ostream_iterator<int>(std::cout," "),
+            [] (int x ) {return  (x % 2) == 1;});
+
+    const std::string_view input_string_view {"ABCDEFGH"};
+    std::string out;
+    std::ranges::copy_n(input_string_view.begin(),4,std::back_inserter(out));
+    std::cout<<quoted(out)<<'\n';
+    out = "abcdefgh";
+    const auto res = std::ranges::copy_n(input_string_view.begin(),5,out.begin());
+    std::cout<<out<<'\n';
+
+    std::cout<<"*(res.in): '"<<*(res.in)<<"', distance: "
+            <<std::distance(std::begin(input_string_view), res.in)<<"', distance: "
+            <<std::distance(std::begin(out),res.out)<<'\n';
+//------------------------------------------------------------------------------------
+//todo print_pos not working as intended.
+    std::string spacious_string {"The    string    with many    spaces!"};
+//    print_pos("spacious_string: ", spacious_string);
+    std::string hello_s("hello");
+    std::ranges::transform(hello_s.begin(),hello_s.end(), hello_s.begin(),
+                           [](unsigned char c)-> unsigned char {return std::toupper(c);});
+    std::cout<<hello_s;
+    std::vector<std::size_t> ordinals;
+    std::ranges::transform(hello_s,std::back_inserter(ordinals),
+                           [](unsigned char c )-> std::size_t {return c;});
+    std::cout<<hello_s<<':';
+    for (auto ord: ordinals) {
+        std::cout<<' '<<ord;
+    }
+    /*
+      constexpr binary_transform_result<I1, I2, O>
+            transform( I1 first1, S1 last1, I2 first2, S2 last2, O result,
+            F binary_op, Proj1 proj1 = {}, Proj2 proj2 = {} );
+
+     * the binary operation binary_op is applied to pairs of elements from two range:
+        one is defined by [first1, last) and the other is defined by [first2, last2)
+        (after respectively peojecting with projection proj1 and proj2.
+     */
+    std::ranges::transform(ordinals,ordinals, ordinals.begin(),std::plus{});
+    printContainer("ordinals: ", ordinals);
+    std::array<int, 8> arr_int8{};
+    std::ranges::generate_n(arr_int8.begin(), arr_int8.size(),dice);
+    printContainer("arr_int dice: ",arr_int8);
+    //todo understand n{0} mean.
+    std::ranges::generate_n(arr_int8.begin(),arr_int8.size(), [n {0}] () mutable {return n++;});
+    printContainer("arr_int8 iota: ",arr_int8);
+
+
+
+
 
 
 
@@ -993,7 +1092,8 @@ void std_bind(){
     f1(1,2,1001);
 }
 int main() {
-        std::cout<<"line begin;\n";
+    std::cout<<"line begin;\n";
+
 //        std_bind();
         std_ranges_non_modifying_sequence_operation();
 //        std_MATH();
