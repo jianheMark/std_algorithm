@@ -1076,8 +1076,10 @@ range beginning at result. replacing all elements satisfying specific criteria w
     printContainer("int_v5: ",int_v5);
     std::array int_arr2{1,2,3,6,7,8,4,5};
     printContainer("int_arr2",int_arr2);
-    std::ranges::replace_if(int_arr2,[](int x) {return 5<x;},5);
+    int_v5.resize(int_arr2.size());
+    std::ranges::replace_copy_if(int_arr2,int_v5.begin(),[](int x) {return 5<x;},5);
     printContainer("int_arr2",int_arr2);
+    std::cout<<"std::ranges::replace_copy_if ends here.\n";
     std::string temps2;
     /*
         constexpr unique_copy_result<I, O>
@@ -1100,6 +1102,8 @@ range beginning at result. replacing all elements satisfying specific criteria w
     /* Two consecutive element *(i-1) and *i are considered equivalent if
      * std::invoke(comp, std::invoke(proj, *(i-1)),std::invoke(proj,*i)) == true
      * where i is an iterator in the range[first +1,last).
+     *
+     * FIRST projection, THEN COMP.
      */
     std::ranges::unique_copy(
             int_v6, std::back_inserter(int_l1),
@@ -1107,6 +1111,12 @@ range beginning at result. replacing all elements satisfying specific criteria w
             [] (int x) {return std::abs(x);}
             );
     printContainer("list int_l1: ",int_l1);
+    std::string str4{"12345"},str5(str4.size(),' ');
+    std::cout<<str4<<"->";
+    std::ranges::reverse_copy(str4.begin(), str4.end(), str5.begin());
+    std::cout<<str5<<"->";
+    std::ranges::reverse_copy(str5,str4.begin());
+    std::cout<<str4<<'\n';
 
 
 
