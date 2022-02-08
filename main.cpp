@@ -1063,6 +1063,21 @@ void std_ranges_non_modifying_sequence_operation()
     //todo understand n{0} mean.
     std::ranges::generate_n(arr_int8.begin(),arr_int8.size(), [n {0}] () mutable {return n++;});
     printContainer("arr_int8 iota: ",arr_int8);
+    std::vector<int> int_v5;
+    std::array int_arr3{1,6,6,1,6};
+    int_v5.resize(int_arr1.size());
+    printContainer("int_arr3", int_arr3);
+    /* constexpr replace_copy_result<I, O>
+      replace_copy( I first, S last, O result, const T1& old_value, const T2& new_value,
+                    Proj proj = {} );
+Copies the elements from the source range [first,last) to the destination
+range beginning at result. replacing all elements satisfying specific criteria with new value.  */
+    std::ranges::replace_copy(int_arr3,int_v5.begin(), 6,9);
+    printContainer("int_v5: ",int_v5);
+    std::array int_arr2{1,2,3,6,7,8,4,5};
+    printContainer("int_arr2",int_arr2);
+    std::ranges::replace_if(int_arr2,[](int x) {return 5<x;},5);
+    printContainer("int_arr2",int_arr2);
 
 
 
