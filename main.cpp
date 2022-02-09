@@ -21,6 +21,38 @@
 #include <list>
 #include <complex>
 #include <ranges>
+#include <span>
+#include <type_traits>
+#include <cstddef>
+template<class T,std::size_t N>
+constexpr auto slide(std::span<T,N>s, std::size_t offset, std::size_t width)
+{
+    return s.subspan(offset, offset + width <= s.size() ? width :0U);
+}
+
+template<class T, std::size_t N, std::size_t M> [[nodiscard]]
+constexpr bool starts_with(std::span<T,N>data, std::span<T,M>prefix) {
+    return data.size() >= prefix.size()
+        && std::equal(prefix.begin(), prefix.end(), data.begin());
+}
+
+
+template <typename T, std::size_t N>
+struct MyRange : std::array<T,N> {};
+
+template<typename T,std::size_t N>
+inline constexpr bool std::ranges::enable_borrowed_range<MyRange<T,N>> = false;
+
+template<typename T, std::size_t N>
+struct MyBorrowedRange : std::span<T,N> {};
+
+template <typename T, std::size_t N>
+inline constexpr bool std::ranges::enable_borrowed_range<MyBorrowedRange<T,N>> = true;
+
+struct A{
+    std::string p{};
+    std::string d{};
+};
 auto print_char = [] (char x) {std::cout<<x;};
 std::string trim_outofStr(std::string_view const in)
 {
@@ -1047,6 +1079,20 @@ void std_ranges_non_modifying_sequence_operation()
     std::ranges::copy_if(ranges_to_vector, std::ostream_iterator<int>(std::cout," "),
             [] (int x ) {return  (x % 2) == 1;});
 
+    std::cout<<"-----------------------------------\n";
+    std::vector<A> vectorA{
+            {"/usr/bin/cat", "blah"},
+            {"/usr/lib", "foo"}};
+    std::vector<std::string> toAv{};
+
+    std::ranges::copy_if(
+            vectorA | std::ranges::views::transform(&A::p),
+            std::back_inserter(toAv),
+            [] (const std::string& p) { return p.size() > 10;}
+            );
+    printContainer("toAv: ", toAv);
+
+    std::cout<<"-----------------------------------\n";
     const std::string_view input_string_view {"ABCDEFGH"};
     std::string out;
     std::ranges::copy_n(input_string_view.begin(),4,std::back_inserter(out));
@@ -1083,6 +1129,7 @@ void std_ranges_non_modifying_sequence_operation()
         (after respectively peojecting with projection proj1 and proj2.
      */
     std::ranges::transform(ordinals,ordinals, ordinals.begin(),std::plus{});
+
     printContainer("ordinals: ", ordinals);
     std::array<int, 8> arr_int8{};
     std::ranges::generate_n(arr_int8.begin(), arr_int8.size(),dice);
@@ -1317,15 +1364,60 @@ void std_ranges_views(){
                   //todo file:///C:/Users/JIAN%20HE/Downloads/html-book-20220201/reference/en/cpp/ranges/subrange.html
                   std::ranges::subrange<int*, int*, std::ranges::subrange_kind(1)>
             >{});
+    //ref_view is a view of the elements of some other range. It wraps a reference to that range.
+    const std::string stra1{"cosmos"};
+    const std::ranges::take_view take_view1{stra1,3};
+    const std::ranges::ref_view ref_view1(take_view1);
 
+    std::cout<<std::boolalpha
+            <<"Call empty() : "<<ref_view1.empty()<<'\n'
+            <<"Call size()  : "<<ref_view1.size()<<'\n'
+            <<"Call begin() : "<<*ref_view1.begin()<<'\n'
+            <<"call end(): "<<*(ref_view1.end()-1)<<'\n'
+            <<"call data(): "<<ref_view1.data() <<'\n'
+            <<"call base() :" <<ref_view1.base().size()<<'\n'
+            <<"range-for   ";
+    for (const auto c: ref_view1) {std::cout<<c;}
+    std::cout<<'\n';
+}
+
+char rot13a(const char x, const char a)
+{
+    return a + (x-a+13)%26;
+}
+char rot13(const char x)
+{
+    if (x >='A' && x <='Z') {
+        return rot13a(x,'A');
+    }
+    if (x >= 'a' && x<= 'z') {
+        return rot13a(x,'a');
+    }
+    return x;
+}
+
+void std_ranges_transform_view()
+{
+    auto showchar = []  (const unsigned char x) {std::putchar(x);};
+    std::string input1{"cppreference.com\n"};
+    std::ranges::for_each(input1, showchar);
+    std::ranges::for_each(
+            input1 | std::ranges::views::transform(rot13),
+            showchar);
+}
+
+void borrowed_range_demo(){
+    static_assert(
+            std::ranges::range<MyRange<int,8>>
+            );
 }
 
 
 
-
-
 int main() {
-    std_ranges_views();
+    borrowed_range_demo();
+//    std_ranges_transform_view();
+//    std_ranges_views();
 //    std_ranges_sorting();
     printer("hello","there"); //todo  understand fold template. https://en.cppreference.com/w/cpp/language/fold
     std::cout<<"line begin;\n";
