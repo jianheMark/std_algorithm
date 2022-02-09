@@ -10,6 +10,7 @@
 #include <tuple>
 #include <memory>
 #include <iomanip>
+#include <cmath>
 #include <execution>
 #include <chrono>
 #include <functional>
@@ -18,6 +19,41 @@
 #include <type_traits>
 #include <cmath>
 #include <list>
+#include <complex>
+#include <ranges>
+auto print_char = [] (char x) {std::cout<<x;};
+std::string trim_outofStr(std::string_view const in)
+{
+    auto view = in | std::ranges::views::drop_while(isspace)
+                    | std::ranges::views::reverse
+                    | std::ranges::views::drop_while(isspace)
+                    | std::ranges::views::reverse;
+    return {view.begin(),view.end()};
+}
+auto printContainer = [] (std::string_view name, auto const& v) {
+    std::cout<<name<<": ";
+    //--n means decrement n before using it in an expression.
+    //n-- means decrement n after using it in an expression.
+    //An array cannot have zero size.
+    //https://stackoverflow.com/questions/9722632/what-happens-if-i-define-a-0-size-array-in-c-c/9723093
+    for (auto n = v.size(); const auto& e:v) {
+        std::cout<<e<<(--n ? "," :"\n");
+    }
+};
+struct id {
+    int i;
+    explicit id(int i): i{i} {}
+};
+void print_id(id i,const auto& v) {
+    std::cout<<"@"<<i.i<<": ";
+    std::ranges::for_each(v, [](auto const& e) {std::cout<<e<<' ';});\
+    std::cout<<'\n';
+}
+template<typename ...Ts>
+bool anyof(char a, char b, Ts...ts){
+    return (...|| (a == ts[0] && b == ts[1]));
+}
+
 //void print_pos(const auto &rem, const auto& v) {
 //    using V = std::remove_cvref<decltype(v)>;
 //    constexpr bool sep { std::is_same_v<typename V::value_type, int>};
@@ -135,6 +171,7 @@ void std_copy(){
     std::copy_n(to_vector.begin()+4, 6,std::back_inserter(out));
     auto print = [] (const int& i) {std::cout<<i<<' ';};
     std::for_each(out.begin(), out.end(), print);
+
 
 
 
@@ -391,11 +428,10 @@ void std_remove()
     std::string str3 = "#Return #Value #Optimization";
     std::cout<<"before: "<<std::quoted(str3)<<'\n';
     std::cout<<"After: \"";
-
     std::remove_copy(str3.begin(),
                      str3.end(),
                      std::ostream_iterator<char>(std::cout),
-                     'R'
+                     '#'
                    );
     std::cout<<"\"\n";
 
@@ -937,16 +973,7 @@ void std_ranges_non_modifying_sequence_operation()
 //--------------------------std::ranges for_each code block end----------------------
 
 //--------------------------std::ranges for_each_n code block----------------------
-    auto printContainer = [] (std::string_view name, auto const& v) {
-        std::cout<<name<<": ";
-        //--n means decrement n before using it in an expression.
-        //n-- means decrement n after using it in an expression.
-        //An array cannot have zero size.
-        //https://stackoverflow.com/questions/9722632/what-happens-if-i-define-a-0-size-array-in-c-c/9723093
-        for (auto n = v.size(); const auto& e:v) {
-            std::cout<<e<<(--n ? "," :"\n");
-        }
-    };
+
     std::array int_arr1 {9,1,13,94,5};
     printContainer("int_arr1", int_arr1);
 //--------------------------std::ranges for_each_n code block ends----------------------
@@ -1096,6 +1123,7 @@ range beginning at result. replacing all elements satisfying specific criteria w
             [](char c1, char c2) {return c1 == ' ' && c2 == ' ';}
             );
     std::cout<<temps2;
+
     const auto int_v6 = {-1,+1,+2,-2,-3,+3,-3};
     printContainer("\nint_v6",int_v6);
     std::list<int> int_l1;
@@ -1118,14 +1146,66 @@ range beginning at result. replacing all elements satisfying specific criteria w
     std::ranges::reverse_copy(str5,str4.begin());
     std::cout<<str4<<'\n';
 
+    /*  constexpr remove_copy_result<ranges::borrowed_iterator_t<R>, O>
+        remove_copy( R&& r, O result, const T& value, Proj proj = {} );
+     * Copy elements from the source range to the destination range beginning at result.
+     * omitting the element (after being projected by proj) satisfy specific criteria.
+     * */
+    const std::string_view stringView1{"#Small #Buffer #Optimization"};
+    std::cout<<"stringView1 as: "<<std::quoted(stringView1)<<'\n';
+    std::cout<<"After stringView1 as: ";
+    //todo using remove_copy to remove the string rather than a char.
+    std::ranges::remove_copy(stringView1.begin(), stringView1.end(),
+                             std::ostream_iterator<char>(std::cout),'#');
+    std::cout<<'\n';
+    using Ci = std::complex<int>;
+    constexpr std::array<Ci,5> source{
+            Ci{1,0},Ci{0,1},Ci{2,-1},Ci{3,2},Ci{4,-3}
+    };
+    std::vector<std::complex<int>> target;
+    std::ranges::remove_copy_if(
+            source,
+            std::back_inserter(target),
+            [] (int imag) {return imag <= 0; },
+            //after being projected then return to predicate.
+            [] (Ci z) {return z.imag();}
+            );
+    printContainer("source",source);
+    printContainer("target",target);
 
+    std::vector<int> int_v7{1,2,1,1,3,3,3,4,5,4};
+    print_id(id{1},int_v7);
 
+    //remove consecutive (adjacent) duplicates.
+    //returns {ret,last}, where ret is a past-the-end iterator for the new range.
+    auto ret = std::ranges::unique(int_v7);
+    print_id(id{22},int_v7);
+    for (auto i : ret) std::cout<<i;
+    std::cout<<'\n';
+    int_v7.erase(ret.begin(),ret.end());
+    print_id(id{2},int_v7);
+    std::cout<<'\n';
+    std::ranges::sort(int_v7);
+    print_id(id{3},int_v7); //1 1 2 3 4 4 5
 
+    auto [first,last] = std::ranges::unique(int_v7.begin(), int_v7.end());
+    int_v7.erase(first,last);
+    print_id(id{4},int_v7);
 
+    //unique with custom comparison and projection.
+    std::vector<std::complex<int>> vc{
+            {1,1},{-1,2},{-2,3},
+            {2,4},{-3,5}
+    };
+    print_id(id{5},vc);
 
-
-
-
+    auto ret2 = std::ranges::unique(
+            vc,
+            [](int x, int y) {return std::abs(x) == std::abs(y);},
+            [] (std::complex<int> z) {return z.real();}
+            );
+    vc.erase(ret2.begin(), ret2.end());
+    print_id(id{6},vc);
 }
 void print_5(int n1, int n2, int n3, int n4, int n5) {
     std::cout<<n1<<' '<<n2<<' '<<n3<<' '<<n4<<' '<<n5;
@@ -1147,11 +1227,120 @@ void std_bind(){
     n = 10;
     f1(1,2,1001);
 }
+//todo https://stackoverflow.com/questions/24957965/comparing-strings-c/24958019 compare string.
+//todo string in another arrary/ uisng find.
+template<typename ...Args>
+void printer(Args&&... args)
+{
+    (std::cout<<...<<args)<<'\n';
+}
+
+void std_ranges_sorting(){
+    std::array digits {3,1,4,1,6};
+    std::ranges::copy(digits,std::ostream_iterator<int>(std::cout," "));
+    std::cout<<": is sorted: "<<std::boolalpha<<std::ranges::is_sorted(digits)<<'\n';
+    std::ranges::sort(digits);
+    std::ranges::copy(digits, std::ostream_iterator<int>(std::cout," "));
+    std::cout<<": is_sorted: "
+            <<std::ranges::is_sorted(std::ranges::begin(digits),std::ranges::end(digits))
+            <<'\n';
+    std::random_device rd;
+    std::mt19937 g{rd()};
+    std::array nums {3,1,4,1,5,9};
+    constexpr int min_sorted_size = 4;
+    int sorted_size = 0;
+    do{
+        std::ranges::shuffle(nums,g);
+        const auto sorted_end = std::ranges::is_sorted_until(nums);
+        sorted_size = std::ranges::distance(nums.begin(), sorted_end);
+        std::ranges::copy(nums,std::ostream_iterator<int>(std::cout," "));
+        std::cout<<" : "<<sorted_size<<" leading sorted element(s)\n";
+    } while (sorted_size < min_sorted_size);
+    std::array nums2{5,6,4,3,2,6,7,9,3};
+    printContainer("array nums2: ", nums2);
+                  //todo not understand.
+    std::ranges::nth_element(nums2,nums2.begin() + nums2.size() /2);
+    printContainer("After n_th element: ",nums2);
+    std::cout<<"The median is: "<<nums2[nums2.size()/2]<<'\n';
+//    nth_element( R&& r, iterator_t<R> nth, Comp comp = {}, Proj proj = {} );
+//    std::ranges::nth_element(nums2,3);
+}
+
+void std_ranges_views(){
+    const auto s = trim_outofStr("\f\n\t\r\v Hello,   C++23!\f\n\t\r\v");
+    std::cout<<std::quoted(s)<<'\n';
+    static constexpr auto i1 = {3,1,4,1,5,9};
+    std::ranges::reverse_view rv {i1};
+    for (int i: rv) std::cout<<i<<' ';
+    std::cout<<'\n';
+
+    for (int i:i1 | std::ranges::views::reverse)
+        std::cout<<i<<' ';
+    std::cout<<'\n';
+//todo the following code not working
+//    for (auto i{OU}; i!= rv.size();++i)         std::cout<<rv[i]<<' ';
+    constexpr char pi[] {'3','.','1','4','1','5','9','2','6'};
+    std::ranges::for_each(pi | std::ranges::views::take(6), print_char);
+    std::cout<<'\n';
+    std::ranges::for_each(std::ranges::take_view{pi,42}, print_char); //since pi only 8 character, so it will be safe.
+    std::cout<<'\n';
+    std::vector<int> int_v1{0,1,2,3,4,5};
+
+    for (int n : std::ranges::views::all(int_v1) | std::ranges::views::take(2) ) {
+        std::cout<< n<<' ';
+    }
+
+    static_assert(
+            /*
+             * The expression views::single(e) is expression-equivalent to
+             * single_view<std::decay_t<decltype((e))>>(e) for any suitable subexpression e.
+             */
+            std::is_same<
+                    decltype(std::ranges::views::single(42)),
+                    std::ranges::single_view<int>
+                    >{}
+            );
+
+    static_assert(
+            std::is_same<
+                    decltype(std::ranges::views::all(int_v1)),
+                    std::ranges::ref_view<std::vector<int,std::allocator<int>>>
+                    > {}
+            );
+    int a[] {1,2,3,4};
+    static_assert(std::is_same<
+                  decltype(std::ranges::views::all(a)),
+                  std::ranges::ref_view<int [4]>
+            >{});
+    static_assert(std::is_same<
+                  decltype(std::ranges::subrange{std::begin(a) + 1, std::end(a) -1 }),
+                  //todo file:///C:/Users/JIAN%20HE/Downloads/html-book-20220201/reference/en/cpp/ranges/subrange.html
+                  std::ranges::subrange<int*, int*, std::ranges::subrange_kind(1)>
+            >{});
+
+}
+
+
+
+
+
 int main() {
+    std_ranges_views();
+//    std_ranges_sorting();
+    printer("hello","there"); //todo  understand fold template. https://en.cppreference.com/w/cpp/language/fold
     std::cout<<"line begin;\n";
+    char dayOne = 't';
+    char dayTwo = 'o';
+    if (anyof(
+                std::tolower(dayOne), std::tolower(dayTwo), "mo","tu","we","th","fr","sa","su"
+                ))
+    {
+        std::cout<<"yes.";
+    }
+
 
 //        std_bind();
-        std_ranges_non_modifying_sequence_operation();
+//        std_ranges_non_modifying_sequence_operation();
 //        std_MATH();
 //        iterSwap();
 //        std_searchN();
@@ -1163,7 +1352,7 @@ int main() {
 //        std_heap();
 //        std_rotate_copy();
 //        std_replace();
-//    std_remove();
+            std_remove();
 //    std_unique_copy(); //https://en.cppreference.com/w/cpp/algorithm/unique_copy
 //    std_count_ifAndCount();
 //    forEachALL();
